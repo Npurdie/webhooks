@@ -1,19 +1,35 @@
-import re
-from bot_services.user_service import UserService, Question
-from bot_services.communication_service import CommunicationService
-from bot_services.authentication_service import AuthenticationService
+from __future__ import print_function
+import httplib2
+import os
 
+from apiclient import discovery
+from oauth2client import client
+from oauth2client import tools
+from oauth2client.file import Storage
+
+import datetime
+
+# very much copied from the Google Calendar API Python Quickstart tutorial
+
+# If modifying these scopes, delete your previously saved credentials
+# at ~/.credentials/calendar-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.readonly','https://www.googleapis.com/auth/plus.login'
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'McBot - Google Calendar'
-
+CLIENT_SECRET_FILE = 'calendar_auth.json'
+APPLICATION_NAME = 'ECSE428 - McBot'
 
 class CalendarService:
+    http = ""
+    service = ""
+    credentials = ""
 
-    def get_credentials():
+    #prompts for appplication authentication on object creation!
+    def __init__(self):
+        self.get_credentials()
+        self.http = self.credentials.authorize(httplib2.Http())
+        self.service = discovery.build('calendar', 'v3', http=self.http)
+
+    def get_credentials(self):
         """Gets valid user credentials from storage.
-
-        Taken straight from the API
 
         If nothing has been stored, or if the stored credentials are invalid,
         the OAuth2 flow is completed to obtain the new credentials.
@@ -38,19 +54,18 @@ class CalendarService:
             else: # Needed only for compatibility with Python 2.6
                 credentials = tools.run(flow, store)
             print('Storing credentials to ' + credential_path)
-        return credentials
+        self.credentials = credentials
 
-
-    def create_event(service):
-        event = load_event()
-        event = service.events().insert(calendarId='primary', body=event).execute()
+    def create_event(self):
+        event = self.load_event()
+        event = self.service.events().insert(calendarId='primary', body=event).execute()
         print ('Event created')
 
-    def load_event(summary = 'Google I/O 2015',
+    def load_event(self, summary = 'McBot Event',
         location = '800 Howard St., San Francisco, CA 94103',
         description = 'A chance to hear more about Google\'s developer products.',
-        startTime = '2017-01-28T09:00:00-07:00',
-        endTime = '2017-01-28T17:00:00-07:00',
+        startTime = '2017-03-28T09:00:00-07:00',
+        endTime = '2017-03-28T17:00:00-07:00',
         timeZone = 'America/Los_Angeles',
         attendees = [
                 {'email': 'lpage@example.com'},
@@ -83,10 +98,16 @@ class CalendarService:
         }
         return event
 
-    # business logic
-    def make_entry(message):
-        credentials = get_credentials()
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('calendar', 'v3', http=http)
-        create_event(service)
-        return "I ust tried to make an entry in your google calendar without your permisson."
+"""
+#Sample code for creating a calendar object and creating the default event
+#(load create_event() with arguments to populate it)
+
+def main():
+    myCalendar = CalendarService()
+    myCalendar.create_event()
+
+
+if __name__ == '__main__':
+    main()
+
+"""
