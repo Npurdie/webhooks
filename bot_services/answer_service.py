@@ -2,6 +2,7 @@ import re
 from bot_services.user_service import UserService, Question
 from bot_services.communication_service import CommunicationService
 from bot_services.authentication_service import AuthenticationService
+from bot_services.calendar_service import CalendarService
 
 MSG_ASK_FOR_USER_TYPE = 'Are you a [student] or [instructor]?'
 QUESTION_USER_TYPE = 'USER_TYPE'
@@ -23,6 +24,12 @@ class AnswerService:
 
     def isAuthenticate(answer):
         searchObj = re.search(r'\b[Aa]uthenticate\b',answer)
+        if searchObj:
+            return True
+        return False
+
+    def isCalendar(answer):
+        searchObj = re.search(r'\b[Cc]alendar\b',answer)
         if searchObj:
             return True
         return False
@@ -86,7 +93,8 @@ class AnswerService:
                 AuthenticationService.resetAuthentication(fbuser)
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
                 return "Your are logged out."
-
+            elif(AnswerService.isCalendar(msg)):
+                return CalendarService().create_event()
 
             return "You asked me something, but I don't know how to answer yet."
         return msg

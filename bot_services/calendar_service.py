@@ -8,6 +8,11 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 import datetime
+try:
+    import argparse
+    flags = tools.argparser.parse_args([])
+except ImportError:
+    flags = None
 
 # very much copied from the Google Calendar API Python Quickstart tutorial
 
@@ -59,7 +64,7 @@ class CalendarService:
     def create_event(self):
         event = self.load_event()
         event = self.service.events().insert(calendarId='primary', body=event).execute()
-        print ('Event created')
+        return 'Event created'
 
     def load_event(self, summary = 'McBot Event',
         location = '800 Howard St., San Francisco, CA 94103',
@@ -98,7 +103,7 @@ class CalendarService:
         }
         return event
 
-"""
+
 #Sample code for creating a calendar object and creating the default event
 #(load create_event() with arguments to populate it)
 
@@ -109,5 +114,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-"""
