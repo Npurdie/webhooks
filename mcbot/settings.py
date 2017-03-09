@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
     'floating-meadow-95591.herokuapp.com',
     'localhost',
     #TODO: change it to yours for testing
-    '01248a14.ngrok.io',
+    'f25686c7.ngrok.io',
     '127.0.0.1'
 ]
 
@@ -83,7 +83,15 @@ WSGI_APPLICATION = 'mcbot.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config()
+    'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'postgres',
+       'USER': 'thomas',
+       'PASSWORD': '',
+       'HOST': 'localhost',
+       'PORT': '5432'
+   }
+
 }
 
 
