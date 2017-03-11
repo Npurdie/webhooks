@@ -94,7 +94,7 @@ class AnswerService:
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
                 return "Your are logged out."
             elif(AnswerService.isCalendar(msg)):
-                return CalendarService().create_event()
+                return CalendarService().create_event_client()
 
             return "You asked me something, but I don't know how to answer yet."
         return msg
