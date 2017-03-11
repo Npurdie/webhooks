@@ -8,6 +8,24 @@ QUESTION_USER_TYPE = 'USER_TYPE'
 QUESTION_AUTHENTICATE = 'AUTHENTICATE'
 QUESTION_NOTHING = 'NOTHING'
 
+#NLP STUFF
+import os.path
+import sys
+import json
+from bot_services.jsonToFunc import sonToFunc
+
+try:
+    import apiai
+except ImportError:
+    sys.path.append(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)
+    )
+    import apiai
+
+CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
+#NLP STUFF
+
+
 class AnswerService:
     #TODO:make it more elegant if possible
     def getUsertype(answer):
@@ -73,19 +91,42 @@ class AnswerService:
 
         # If the question is empty, the msg must be a question.
         elif(conversation.question == Question.get_question_type(QUESTION_NOTHING)):
-            # If user enters "authenticate", check if he/she has already been authenticated to do corresponding works.
-            #TODO: have a function that check if the answer contains the word 'authenticate'
-            if(AnswerService.isAuthenticate(msg)):
-                if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
-                    return "You have already finished authentication."
-                else:
-                    conversation.set_conversation_question(Question.get_question_type(QUESTION_AUTHENTICATE))
-                return AuthenticationService.authenticationProcess(fbuser, msg)
-            # If user enters "logout", reset his/her authentication_status to "authentication_no"
-            elif(AnswerService.isLogout(msg)):
-                AuthenticationService.resetAuthentication(fbuser)
-                conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
-                return "Your are logged out."
+
+            #API.AI STUFF
+            ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+
+            request = ai.text_request()
+
+            request.lang = 'de'  # optional, default value equal 'en'
+
+            request.session_id = "<SESSION ID, UNIQUE FOR EACH USER>"
+
+            request.query = msg
+            # request.query = "hello"
+
+            response = request.getresponse()
+            apiJSON = response.read()
+            jsonDict = json.loads(apiJSON)
+            print (jsonDict)
+            return sonToFunc(jsonDict["result"])
+            #API.AI STUFF
+
+
+
+            #THIS SHOULD BE MOVED OVER TO jsonToFunc.py File, keep this file as
+            # # If user enters "authenticate", check if he/she has already been authenticated to do corresponding works.
+            # #TODO: have a function that check if the answer contains the word 'authenticate'
+            # if(AnswerService.isAuthenticate(msg)):
+            #     if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
+            #         return "You have already finished authentication."
+            #     else:
+            #         conversation.set_conversation_question(Question.get_question_type(QUESTION_AUTHENTICATE))
+            #     return AuthenticationService.authenticationProcess(fbuser, msg)
+            # # If user enters "logout", reset his/her authentication_status to "authentication_no"
+            # elif(AnswerService.isLogout(msg)):
+            #     AuthenticationService.resetAuthentication(fbuser)
+            #     conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
+            #     return "Your are logged out."
 
 
             return "You asked me something, but I don't know how to answer yet."
