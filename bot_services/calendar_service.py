@@ -16,9 +16,10 @@ except ImportError:
 
 try:
     import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+    flags = tools.argparser.parse_args([])
 except ImportError:
     flags = None
+
 
 
 # very much copied from the Google Calendar API Python Quickstart tutorial
@@ -88,7 +89,7 @@ class CalendarService:
 """
         #need to figure out how the API wants time to be writtern
     def create_event_client(self, summary = 'McBot%20Event',
-        location = '800%20Howard%20St.,%20San Francisco,%20CA%2094103',
+        location = '800%20Howard%20St.,%20San%20Francisco,%20CA%2094103',
         description = 'A%20chance%20to%20hear%20more%20about%20Google\'s%20developer%20products.',
         dates = '20170310T000000Z%2F20170310T010000Z&',
         attendees = [
