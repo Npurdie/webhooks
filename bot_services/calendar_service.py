@@ -14,12 +14,6 @@ try:
 except ImportError:
     flags = None
 
-try:
-    import argparse
-    flags = tools.argparser.parse_args([])
-except ImportError:
-    flags = None
-
 
 
 # very much copied from the Google Calendar API Python Quickstart tutorial
