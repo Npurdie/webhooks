@@ -21,21 +21,24 @@ inTest4 = {
 
 
 # import classes for functions here
+from bot_services.calendar_service import CalendarService
 
 def sonToFunc(inSon):
     if inSon == {}:
         return "Null input"
     if "action" in inSon.keys():
         apiAction = inSon["action"]
+        if "parameters" in inSon.keys():
+            parameters = inSon["parameters"]
     else:
         return "Invalid input"
 
     if apiAction == "login":
-        return ["login"]
+        return "login"
         # return login()
 
     elif apiAction == "logout":
-        return ["logout"]
+        return "logout"
         # return logout()
 
     elif apiAction == "walksafe":
@@ -59,9 +62,13 @@ def sonToFunc(inSon):
         else:
             return "Error: Incomplete Input"
 
-    elif apiAction == "calender":
-        if "event" in inSon.keys() and "date" in inSon.keys() and "time" in inSon.keys():
-            return ["calenderSet", inSon["event"], inSon["date"], inSon["time"]]
+    elif apiAction == "addEntryCalendar":
+        if "name" in parameters.keys() and "date" in parameters.keys() and "time" in parameters.keys() and "description" in parameters.keys():
+            name = parameters["name"]
+            description = parameters["description"]
+            date = parameters["date"]
+            time = parameters["time"]
+            return CalendarService().create_event_client(name,description)
             # return calenderSet(inSon["event"],inSon["date"],inSon["time"])
         else:
             return "Error: Incomplete Input"
@@ -92,8 +99,7 @@ def sonToFunc(inSon):
             return "Error: Incomplete Input"
 
     elif apiAction == "deadlines":
-        return ["deadlines"]
-        # return deadlines()
+        return 'deadlines'
 
     elif apiAction == "commands":
         return ["listCommands"]

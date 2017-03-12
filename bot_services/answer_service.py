@@ -114,7 +114,6 @@ class AnswerService:
             response = request.getresponse()
             apiJSON = response.read()
             jsonDict = json.loads(apiJSON)
-            print (jsonDict)
             return sonToFunc(jsonDict["result"])
             #API.AI STUFF
 
