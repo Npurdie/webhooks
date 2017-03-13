@@ -22,6 +22,7 @@ inTest4 = {
 
 # import classes for functions here
 from bot_services.calendar_service import CalendarService
+from bot_services.event_service import EventService
 
 def sonToFunc(inSon):
     if inSon == {}:
@@ -99,7 +100,7 @@ def sonToFunc(inSon):
             return "Error: Incomplete Input"
 
     elif apiAction == "deadlines":
-        return 'deadlines'
+        return EventService().listAllDeadlines()
 
     elif apiAction == "commands":
         return ["listCommands"]

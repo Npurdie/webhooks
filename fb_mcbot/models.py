@@ -12,6 +12,7 @@ class FBUser(models.Model):
     mcgill_email = models.EmailField(default='', max_length=254, validators=[EmailValidator(message="Please enter a valid McGill email address.", whitelist="mcgill.ca")])
     authentication_status = models.CharField(default='authentication_no', max_length=20)
     code = models.SlugField(default='', max_length=20)
+    timezone = models.IntegerField(default = -5)
 
     def __str__(self):
         return ("%s %s" % (self.first_name , self.last_name))

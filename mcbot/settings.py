@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'fb_mcbot'
+    'fb_mcbot',
+    'bot_mcgill'
 ]
 
 MIDDLEWARE = [

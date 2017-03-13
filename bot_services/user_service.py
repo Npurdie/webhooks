@@ -24,7 +24,8 @@ class UserService:
         pprint("Creating new user")
         firstname = user_info['first_name']
         lastname = user_info['last_name']
-        new_user = FBUser(first_name = firstname, last_name = lastname, user_id =  user_id)
+        timezone = user_info['timezone']
+        new_user = FBUser(first_name = firstname, last_name = lastname, user_id =  user_id, timezone = timezone)
         new_user.save()
         return new_user
 

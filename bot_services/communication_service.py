@@ -19,6 +19,6 @@ class CommunicationService:
         # TODO Change access token
         post_message_url = 'https://graph.facebook.com/v2.8/me/messages?access_token={}'.format(PAGE_ACCESS_TOKEN)
         response_msg = dumps({"recipient":{"id":fbid}, "message":{"text":received_message}})
-        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"}, data=response_msg)
         print('SEND STATUS')
         pprint(status.json())
