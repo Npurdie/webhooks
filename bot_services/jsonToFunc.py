@@ -22,9 +22,15 @@ inTest4 = {
 
 # import classes for functions here
 from bot_services.calendar_service import CalendarService
+from bot_services.user_service import UserService, Question
+from bot_services.authentication_service import AuthenticationService
 from bot_services.event_service import EventService
 
-def sonToFunc(inSon):
+QUESTION_USER_TYPE = 'USER_TYPE'
+QUESTION_AUTHENTICATE = 'AUTHENTICATE'
+QUESTION_NOTHING = 'NOTHING'
+
+def sonToFunc(inSon, message):
     if inSon == {}:
         return "Null input"
     if "action" in inSon.keys():
@@ -34,12 +40,28 @@ def sonToFunc(inSon):
     else:
         return "Invalid input"
 
+    # If user enters "login", check if he/she has already been authenticated to do corresponding works.
     if apiAction == "login":
-        return "login"
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        conversation = UserService.get_conversation(fbuser)
+        msg = message['message']['text']
+        if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
+            return "You have already finished Authentication."
+        else:
+            conversation.set_conversation_question(Question.get_question_type(QUESTION_AUTHENTICATE))
+        return AuthenticationService.authenticationProcess(fbuser, msg)
+        # return "login"
         # return login()
 
     elif apiAction == "logout":
-        return "logout"
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        conversation = UserService.get_conversation(fbuser)
+        AuthenticationService.resetAuthentication(fbuser)
+        conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
+        return "Your are logged out."
+        # return "logout"
         # return logout()
 
     elif apiAction == "walksafe":
@@ -75,7 +97,15 @@ def sonToFunc(inSon):
             return "Error: Incomplete Input"
 
     elif apiAction == "events":
-        return ["curEvents"]
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        conversation = UserService.get_conversation(fbuser)
+        ssociety = UserService.get_student_society(fbuser)
+        if (ssociety is None):
+            return "Sorry you can't post event because you are not student society"
+        reply = EventService.initEvent(conversation)
+        return reply
+        # return ["curEvents"]
         # return curEvents()
 
     elif apiAction == "change":
@@ -154,8 +184,8 @@ def sonToFunc(inSon):
         return "Invalid input"
 
 
-print (sonToFunc(inTest0))
-print (sonToFunc(inTest1))
-print (sonToFunc(inTest2))
-print (sonToFunc(inTest3))
-print (sonToFunc(inTest4))
+# print (sonToFunc(inTest0))
+# print (sonToFunc(inTest1))
+# print (sonToFunc(inTest2))
+# print (sonToFunc(inTest3))
+# print (sonToFunc(inTest4))

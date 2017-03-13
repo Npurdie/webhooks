@@ -21,6 +21,11 @@ class FBUser(models.Model):
         self.user_type = user_type
         self.save()
 
+class StudentSociety(models.Model):
+    fbuser = models.ForeignKey(FBUser, on_delete=models.CASCADE)
+    def __str__(self):
+        return ("%s" % (self.fbuser.first_name))
+
 class Conversation(models.Model):
     fbuser = models.ForeignKey(FBUser, on_delete=models.CASCADE)
     question = models.PositiveIntegerField()
@@ -31,3 +36,15 @@ class Conversation(models.Model):
     def set_conversation_question(self, question):
         self.question = question
         self.save()
+
+class Event(models.Model):
+    name = models.CharField(max_length=70, null=True)
+    location = models.CharField(max_length=70, null=True)
+    description = models.CharField(max_length=300, null=True)
+    link = models.CharField(max_length=300, null=True)
+    creator = models.ForeignKey(StudentSociety, on_delete=models.CASCADE)
+    creation_time = models.DateTimeField(auto_now_add=True)
+    event_time = models.DateField(null=True)
+
+    def __str__(self):
+        return ("%s %s %s %s" % (self.name , self.location, self.description, self.creator.fbuser.first_name))

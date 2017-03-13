@@ -1,8 +1,9 @@
 from pprint import pprint
-from fb_mcbot.models import FBUser, Conversation
+from fb_mcbot.models import FBUser, Conversation, StudentSociety
 
 class Question:
-    question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2}
+    question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2, 'EVENT_NAME':3,
+    'EVENT_LOCATION':4, 'EVENT_DESCRIPTION':5, 'EVENT_LINK':6, 'EVENT_DATE':7, 'EVENT_CONFIRMATION':8}
 
     def get_question_type(question):
         try:
@@ -10,6 +11,9 @@ class Question:
         except KeyError:
             pprint("Internal Error! " + question + " is not a question type!")
         return result
+
+    def about_event(question):
+        return (question >= 3 and question <= 8)
 
 class UserService:
     def getUser(userid):
@@ -45,3 +49,11 @@ class UserService:
             pprint("Conversation with " + fbuser.user_id + " not found in db")
             return None
         return conversation
+
+    def get_student_society(fbuser):
+        try:
+            ssociety = StudentSociety.objects.get(fbuser = fbuser)
+        except StudentSociety.DoesNotExist:
+            pprint("Student StudentSociety with " + fbuser.user_id + " not found in db")
+            return None
+        return ssociety
