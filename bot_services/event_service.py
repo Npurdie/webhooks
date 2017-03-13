@@ -50,6 +50,14 @@ class EventService:
         print(details)
         return details
 
+    def get_events():
+        now = datetime.now()
+        events =  Event.objects.filter(event_time__gte = now)
+        result = ""
+        for e in events:
+            result += "\n[" + e.name + "]: " + e.link
+        return result
+
     def validate_date(d):
         try:
             datetime.strptime(d, '%Y-%m-%d')

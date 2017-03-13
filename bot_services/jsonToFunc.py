@@ -79,11 +79,12 @@ def sonToFunc(inSon, message):
             return "Error: Incomplete Input"
 
     elif apiAction == "rsvp":
-        if "event" in inSon.keys() and "status" in inSon.keys():
-            return ["rsvp", inSon["event"], inSon["status"]]
-            # return rsvp(inSon["event"],inSon["status"])
-        else:
-            return "Error: Incomplete Input"
+        # if "event" in inSon.keys() and "status" in inSon.keys():
+        #     return ["rsvp", inSon["event"], inSon["status"]]
+        #     # return rsvp(inSon["event"],inSon["status"])
+        # else:
+        #     return "Error: Incomplete Input"
+        return EventService.get_events()
 
     elif apiAction == "addEntryCalendar":
         if "name" in parameters.keys() and "date" in parameters.keys() and "time" in parameters.keys() and "description" in parameters.keys():
