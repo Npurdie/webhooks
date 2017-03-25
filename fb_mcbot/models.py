@@ -50,6 +50,8 @@ class FBUser(models.Model):
     code = models.SlugField(default='', max_length=20)
     timezone = models.IntegerField(default = -5)
 
+    major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True);
+
     def __str__(self):
         return ("%s %s" % (self.first_name , self.last_name))
 
