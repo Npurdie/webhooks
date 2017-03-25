@@ -3,6 +3,42 @@ from django.core.validators import MinLengthValidator
 from django.core.validators import EmailValidator
 
 # Create your models here.
+
+#majors for engineering for now
+#Architecture
+#Bioengineering
+#Chemical Engineering
+#Civil Engineering
+#Computer Engineering
+#Electrical Engineering
+#Materials Engineering
+#Mechanical Engineering
+#Mining Engineering
+#Software Engineering
+class Major(models.Model):
+    MAJORS = (  # enum of options of majors
+        ('architecture', 'Architecture'),
+        ('bioengineering', 'Bioengineering'),
+        ('chemical_engineering', 'Chemical Engineering'),
+        ('civil_engineering', 'Civil Engineering'),
+        ('computer_engineering', 'Computer Engineering'),
+        ('electrical_engineering', 'Electrical Engineering'),
+        ('materials_engineering', 'Materials Engineering'),
+        ('mechanical_engineering', 'Mechanical Engineering'),
+        ('mining_engineering', 'Mining Engineering'),
+        ('software_engineering', 'Software Engineering')
+    )
+    FACULTIES = (
+        ('engineering', 'Engineering'),
+        ('science', 'Science'),
+        ('arts', 'Arts'),
+        ('education', 'Education'),
+    )
+    name = models.CharField(max_length=70, choices=MAJORS, default='architecture')
+    faculty = models.CharField(max_length=70, choices=FACULTIES, default='engineering')
+    def __str__(self):
+        return ("%s" % (self.name))
+
 class FBUser(models.Model):
 
     first_name = models.CharField(max_length=70)
