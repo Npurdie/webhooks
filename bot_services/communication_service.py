@@ -1,13 +1,14 @@
 from json import dumps, loads
 from pprint import pprint
 from bot_email.emailbot import Email
+from bot_services.user_service import UserService
 import requests
 import facebook
 
 # Permanent page access token
 # TODO change access token to production one before pushing.
 PAGE_ACCESS_TOKEN = 'EAAFJaTQTZCAgBAKquTNCRxUz2edEmSuocZC9EreThZAiGFImZAHGGqVlcLdvRDe3vMNXZBvXnQL3ZC0VMJY8IMAWt6t0j8tZCBwsYBZAQDEYOh1kwdjzmnu6zkg1tPyWITWTtgcQvZAw0mvyqZAIkZABmmkMQr1UQwBCkKkcXCTmaZAFHAZDZD'
-# PAGE_ACCESS_TOKEN = 'EAAVTNRkgcFgBAOpN7wzwZBtRcLwupYKCTJZAZCPVrReGJZAHVXqkKVvZAZCXCdwrDsNAK2e8FxMjqLzZCdZCuQR8vh9o1LSsZAYQi2QliWJUQPsNS6TYLnxoxr4EH9SyhydWZBZAdWN3BlzSLL3NZCeEORTe3EZBDToaVJTjwRQsow48qOgZDZD'
+#PAGE_ACCESS_TOKEN = 'EAAVTNRkgcFgBAHvfvbdAa85EDAm09ih07IZCoGK7KDnfvOSEfQAYzJMeLUjCLgWsb0ACqcZAg8BcJFDjZC01Yx0QZBZC0KVTadfZBOfG3MrkZCfsX3AuJ6QLHr2eLvjJUSsuU8AN7mWvspro7KRxUskqCf1lfFfWpFMDBeWtpLoEwZDZD'
 graph = facebook.GraphAPI(PAGE_ACCESS_TOKEN, version='2.2')
 
 class CommunicationService:
@@ -22,3 +23,7 @@ class CommunicationService:
         status = requests.post(post_message_url, headers={"Content-Type": "application/json"}, data=response_msg)
         print('SEND STATUS')
         pprint(status.json())
+
+    def post_facebook_message_to_all(received_message):
+            for user in UserService.getAllUsers():
+                CommunicationService.post_facebook_message(user.user_id,received_message)

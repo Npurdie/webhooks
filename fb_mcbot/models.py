@@ -26,6 +26,11 @@ class StudentSociety(models.Model):
     def __str__(self):
         return ("%s" % (self.fbuser.first_name))
 
+class Admin(models.Model):
+    fbuser = models.ForeignKey(FBUser, on_delete=models.CASCADE)
+    def __str__(self):
+        return ("%s" % (self.fbuser.first_name))
+
 class Conversation(models.Model):
     fbuser = models.ForeignKey(FBUser, on_delete=models.CASCADE)
     question = models.PositiveIntegerField()

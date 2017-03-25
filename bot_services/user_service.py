@@ -1,5 +1,5 @@
 from pprint import pprint
-from fb_mcbot.models import FBUser, Conversation, StudentSociety
+from fb_mcbot.models import FBUser, Conversation, StudentSociety, Admin
 
 class Question:
     question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2, 'EVENT_NAME':3,
@@ -23,6 +23,14 @@ class UserService:
             pprint("User id not found in db, the user does not exist.")
             return None
         return user
+
+    def getAllUsers():
+        try:
+            users = FBUser.objects.all()
+        except FBUser.DoesNotExist:
+            pprint("DataBase Error")
+            return None
+        return users
 
     def create_new_user(user_info,user_id):
         pprint("Creating new user")
@@ -57,3 +65,10 @@ class UserService:
             pprint("Student StudentSociety with " + fbuser.user_id + " not found in db")
             return None
         return ssociety
+
+    def is_admin(fbuser):
+        try:
+            Admin.objects.get(fbuser = fbuser)
+            return True
+        except Admin.DoesNotExist:
+            return False

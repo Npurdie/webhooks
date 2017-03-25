@@ -53,6 +53,12 @@ class AnswerService:
             return True
         return False
 
+    def isMsgAll(answer):
+        searchObj = re.search(r'\b[Mm]sg all\b',answer)
+        if searchObj:
+            return True
+        return False
+
     # business logic
     def process_message(message):
         # Get user.
@@ -104,7 +110,14 @@ class AnswerService:
                     return "Sorry you can't post event because you are not student society"
                 reply = EventService.initEvent(conversation)
                 return reply
-
+            #if user enteres msg_all, will change when AI recognizes user wants to send mass message
+            elif(AnswerService.isMsgAll(msg.split(":")[0])):
+                if(UserService.is_admin(fbuser)):
+                    if (":" not in msg):
+                        return "please enter [msg all:your message]"
+                    CommunicationService.post_facebook_message_to_all(msg.split(":")[1])
+                    return"Your message has been sent to all registered users"
+                return "Only admins can message all users"
             #API.AI STUFF
             ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
             request = ai.text_request()
@@ -116,7 +129,6 @@ class AnswerService:
             str_apiJSON = apiJSON.decode('utf-8')
             jsonDict = json.loads(str_apiJSON)
             return sonToFunc(jsonDict["result"], message)
-            #API.AI STUFF
 
             return "You asked me something, but I don't know how to answer yet."
         return msg
