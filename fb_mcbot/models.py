@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.core.validators import EmailValidator
@@ -34,10 +35,24 @@ class Major(models.Model):
         ('arts', 'Arts'),
         ('education', 'Education'),
     )
-    name = models.CharField(max_length=70, choices=MAJORS, default='architecture')
+    name = models.CharField(max_length=70, choices=MAJORS, default='architecture', primary_key=True) ##ensures only one of each major
     faculty = models.CharField(max_length=70, choices=FACULTIES, default='engineering')
     def __str__(self):
         return ("%s" % (self.name))
+
+class Course(models.Model): ##A course belongs to many majors. Many courses belong to the same major. Therefore many to many
+    COURSES = (  # enum of options of courses
+        ('comp_250', 'COMP 250'),
+        ('ecse_428', 'ECSE 428'),
+        ('ecse_322', 'ECSE 322'),
+        ('ecse_330', 'ECSE 330'),
+        ('math_363', 'MATH 363')
+    )
+    name = models.CharField(max_length=70, choices=COURSES, primary_key=True)
+    majors = models.ManyToManyField(Major)
+
+    def __str__(self):
+        return (self.name)
 
 class FBUser(models.Model):
 
@@ -51,6 +66,7 @@ class FBUser(models.Model):
     timezone = models.IntegerField(default = -5)
 
     major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True);
+    courses = models.ManyToManyField(Course) ##no special tricks, we allow FBUser to take courses outside of their major (for simplicity and this also happens to be the case)
 
     def __str__(self):
         return ("%s %s" % (self.first_name , self.last_name))

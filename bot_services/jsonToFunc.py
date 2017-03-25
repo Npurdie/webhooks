@@ -192,17 +192,6 @@ def sonToFunc(inSon, message):
             return "I don't know what you major in, could you tell me?"
 
     elif apiAction == "addMajor":
-        # call some function
-        # user_id = (message['sender']['id'])
-        # fbuser = UserService.getUser(user_id)
-        # if (UserService.get_major(fbuser)):
-        #     return ("You told me you study %s", (fbuser.major))
-        # elif "major" in parameters.keys():
-        #
-        #     fbuser.major = parameters['major']
-        #     return ("I've set your major as %s", (fbuser.major))
-        # else:
-        #     return "Unrecognized.."
         user_id = (message['sender']['id'])
         fbuser = UserService.getUser(user_id)
         if "major" in parameters.keys():
@@ -210,6 +199,13 @@ def sonToFunc(inSon, message):
                 return "I didn't get what you were studying.. try again?"
             else:
                 return (UserService.set_major(fbuser, parameters['major']))
+
+    elif apiAction == "addCourses":
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if "courses" in parameters.keys():
+            return (UserService.add_courses(fbuser, parameters['courses']))
+
     else:
         return "Invalid input"
 
