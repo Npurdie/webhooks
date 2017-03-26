@@ -2,8 +2,11 @@ from bot_mcgill.models import McgillEvent
 import json
 import _datetime
 import pytz
+import re
 from bot_services.user_service import UserService, Question
+from bot_services.communication_service import CommunicationService
 from datetime import datetime
+from dateutil.parser import parse
 from fb_mcbot.models import Event
 
 QUESTION_EVENT_NAME = 'EVENT_NAME'
@@ -26,10 +29,30 @@ class EventService:
             deadlines += event.event_name + ", " + dateString + ". "
         return deadlines
 
-    def create_new_event(conversation):
+    def get_event_id_from_link(link):
+        print(link)
+        p = re.compile('\d+(?!=\d)')
+        m = p.search(link)
+        if not m:
+            raise Exception('not valid link')
+        return m.group(0)
+
+    def create_new_event(conversation, link):
         ssociety = UserService.get_student_society(conversation.fbuser)
+        eventId = EventService.get_event_id_from_link(link)
+        if (eventId is None):
+            raise
+        try:
+            event = CommunicationService.get_event_info(eventId)
+        except Exception:
+            raise
+        event_info = event.json()
         new_event = Event()
+        new_event.link = link
         new_event.creator = ssociety
+        new_event.name = event_info['name']
+        new_event.event_time = parse(event_info['end_time']).strftime('%Y-%m-%d %H:%M:%S')
+        new_event.category = event_info['category']
         new_event.save()
 
     def get_most_recent_event(conversation):
@@ -38,17 +61,12 @@ class EventService:
         recent_event = Event.objects.filter(creator = ssociety).latest('creation_time')
         return recent_event
 
-    def initEvent(conversation):
-        EventService.create_new_event(conversation)
-        conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_NAME))
-        return "please enter event name"
-
-    def format_event_details(event):
-        details = "\nEvent Details:" + "\n[Event Name]: " + event.name + "\n[Event Location]: " + event.location \
-                + "\n[Event Description]: " + event.description + "\n[Event Date]: " + event.event_time  \
-                + "\n[Event Link]: " + event.link
-        print(details)
-        return details
+    def initEvent(conversation, link):
+        try:
+            EventService.create_new_event(conversation, link)
+            return "Event created"
+        except Exception as e:
+            return str(e)
 
     def get_events():
         now = datetime.now()
@@ -57,51 +75,3 @@ class EventService:
         for e in events:
             result += "\n[" + e.name + "]: " + e.link
         return result
-
-    def validate_date(d):
-        try:
-            datetime.strptime(d, '%Y-%m-%d')
-            return True
-        except ValueError:
-            return False
-
-    def confirm_event(event, msg):
-        if (msg != 'y'):
-            event.delete()
-            return "event not saved"
-        return "event saved"
-
-    def processEvent(conversation, msg):
-        event = EventService.get_most_recent_event(conversation)
-        if (conversation.question == Question.get_question_type(QUESTION_EVENT_NAME)):
-            event.name = msg
-            event.save()
-            conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_LOCATION))
-            return "please enter location"
-        elif (conversation.question == Question.get_question_type(QUESTION_EVENT_LOCATION)):
-            event.location = msg
-            event.save()
-            conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_DESCRIPTION))
-            return "please enter event description"
-        elif (conversation.question == Question.get_question_type(QUESTION_EVENT_DESCRIPTION)):
-            event.description = msg
-            event.save()
-            conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_LINK))
-            return "please enter event link"
-        elif (conversation.question == Question.get_question_type(QUESTION_EVENT_LINK)):
-            event.link = msg
-            event.save()
-            conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_DATE))
-            return "please enter event date in [yyyy-mm-dd] format"
-        elif (conversation.question == Question.get_question_type(QUESTION_EVENT_DATE)):
-            if (EventService.validate_date(msg)):
-                event.event_time = msg
-                event.save()
-                conversation.set_conversation_question(Question.get_question_type(QUESTION_EVENT_CONFIRMATION))
-                return EventService.format_event_details(event) + "\n\nPlease type [y] to save the event"
-            else:
-                return "please enter event date in [yyyy-mm-dd] format"
-        elif (conversation.question == Question.get_question_type(QUESTION_EVENT_CONFIRMATION)):
-            reply = EventService.confirm_event(event, msg)
-            conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
-            return reply

@@ -104,11 +104,14 @@ class AnswerService:
 
         # If the question is empty, the msg must be a question.
         elif(conversation.question == Question.get_question_type(QUESTION_NOTHING)):
-            if (AnswerService.isPostEvent(msg)):
+            #TODO: NLP post event
+            if (AnswerService.isPostEvent((msg.split(":")[0]))):
                 ssociety = UserService.get_student_society(fbuser)
                 if (ssociety is None):
                     return "Sorry you can't post event because you are not student society"
-                reply = EventService.initEvent(conversation)
+                p = re.compile('(?:http).*')
+                m = p.search(msg)
+                reply = EventService.initEvent(conversation, m.group(0))
                 return reply
             #if user enteres msg_all, will change when AI recognizes user wants to send mass message
             elif(AnswerService.isMsgAll(msg.split(":")[0])):
