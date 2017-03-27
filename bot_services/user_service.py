@@ -1,5 +1,5 @@
 from pprint import pprint
-from fb_mcbot.models import FBUser, Conversation, StudentSociety, Major, Course
+from fb_mcbot.models import FBUser, Conversation, StudentSociety, Admin, Major, Course
 
 class Question:
     question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2, 'EVENT_NAME':3,
@@ -65,6 +65,13 @@ class UserService:
             pprint("Student StudentSociety with " + fbuser.user_id + " not found in db")
             return None
         return ssociety
+
+    def is_admin(fbuser):
+        try:
+            Admin.objects.get(fbuser = fbuser)
+            return True
+        except Admin.DoesNotExist:
+            return False
 
     def get_major(fbuser):
         print (fbuser)

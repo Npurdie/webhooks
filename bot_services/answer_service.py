@@ -24,8 +24,8 @@ except ImportError:
     )
     import apiai
 
-#CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
-CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602'
+CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
+#CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
 #NLP STUFF
 
 
@@ -50,6 +50,12 @@ class AnswerService:
 
     def isPostEvent(answer):
         searchObj = re.search(r'\b[Pp]ost event\b',answer)
+        if searchObj:
+            return True
+        return False
+
+    def isMsgAll(answer):
+        searchObj = re.search(r'\b[Mm]sg all\b',answer)
         if searchObj:
             return True
         return False
@@ -120,7 +126,15 @@ class AnswerService:
                 m = p.search(msg)
                 reply = EventService.initEvent(conversation, m.group(0))
                 return reply
-            if(AnswerService.isAuthenticate(msg)):
+            #if user enteres msg_all, will change when AI recognizes user wants to send mass message
+            elif(AnswerService.isMsgAll(msg.split(":")[0])):
+                if(UserService.is_admin(fbuser)):
+                    if (":" not in msg):
+                        return "please enter [msg all:your message]"
+                    CommunicationService.post_facebook_message_to_all(msg.split(":")[1])
+                    return"Your message has been sent to all registered users"
+                return "Only admins can message all users"
+            elif(AnswerService.isAuthenticate(msg)):
                 if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
                     return "You have already finished authentication."
                 else:
@@ -142,8 +156,6 @@ class AnswerService:
             apiJSON = response.read()
             str_apiJSON = apiJSON.decode('utf-8')
             jsonDict = json.loads(str_apiJSON)
-            print ("Message:")
-            print (message)
             return sonToFunc(jsonDict["result"], message)
 
             return "You asked me something, but I don't know how to answer yet."
