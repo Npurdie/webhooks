@@ -44,12 +44,11 @@ class Conversation(models.Model):
 
 class Event(models.Model):
     name = models.CharField(max_length=70, null=True)
-    location = models.CharField(max_length=70, null=True)
-    description = models.CharField(max_length=300, null=True)
+    category = models.CharField(max_length=100, null=True)
     link = models.CharField(max_length=300, null=True)
     creator = models.ForeignKey(StudentSociety, on_delete=models.CASCADE)
     creation_time = models.DateTimeField(auto_now_add=True)
-    event_time = models.DateField(null=True)
+    event_time = models.DateTimeField(null=True)
 
     def __str__(self):
-        return ("%s %s %s %s" % (self.name , self.location, self.description, self.creator.fbuser.first_name))
+        return ("%s %s %s %s %s" % (self.name, self.link, self.event_time, self.category, self.creator.fbuser.first_name))

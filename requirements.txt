@@ -21,3 +21,4 @@ Unidecode==0.4.20
 uritemplate==3.0.0
 whitenoise==3.3.0
 wit==4.2.0
+python-dateutil==2.5.3
