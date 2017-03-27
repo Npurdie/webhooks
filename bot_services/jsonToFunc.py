@@ -196,7 +196,7 @@ def sonToFunc(inSon, message):
         fbuser = UserService.getUser(user_id)
         if "major" in parameters.keys():
             if(parameters['major'] == ""):
-                return "I didn't get what you were studying.. try again?"
+                return "I didn't get what you major in.. try again?"
             else:
                 return (UserService.set_major(fbuser, parameters['major']))
 
@@ -204,7 +204,10 @@ def sonToFunc(inSon, message):
         user_id = (message['sender']['id'])
         fbuser = UserService.getUser(user_id)
         if "courses" in parameters.keys():
-            return (UserService.add_courses(fbuser, parameters['courses']))
+            if not parameters['courses']:
+                return "I didn't get what courses you're taking.. try again?"
+            else:
+                return (UserService.add_courses(fbuser, parameters['courses']))
 
     else:
         return "Invalid input"
