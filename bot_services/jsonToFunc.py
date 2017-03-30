@@ -111,12 +111,20 @@ def sonToFunc(inSon, message):
         # return curEvents()
 
     # If user enters "change" we start the "change my user type" conversation
-    elif apiAction == "change":
+    elif apiAction == "changeStatus":
         user_id = (message['sender']['id'])
         fbuser = UserService.getUser(user_id)
-        conversation = UserService.get_conversation(fbuser)
-        conversation.set_conversation_question(Question.get_question_type(QUESTION_CHANGE_STATUS))
-        return "Please enter your new user type."
+        if "status" in parameters.keys() and (parameters['status'] == 'instructor' or parameters['status'] == 'student'):
+            if (fbuser.user_type == parameters['status']):
+                return "You already are: " +  fbuser.user_type + ", no changes were made."
+            else :
+                fbuser.user_type = parameters['status']
+                fbuser.save()
+                return "Your new status is: " + fbuser.user_type + "."
+        else:
+            conversation = UserService.get_conversation(fbuser)
+            conversation.set_conversation_question(Question.get_question_type(QUESTION_CHANGE_STATUS))
+        return "Please enter your new status."
 
     elif apiAction == "minerva":
         if "username" in inSon.keys() and "password" in inSon.keys():

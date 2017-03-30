@@ -111,9 +111,9 @@ class AnswerService:
             elif(fbuser_type != current_type):
                 fbuser.set_user_type(fbuser_type)
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
-                return "New user type is: " + fbuser_type + "."
+                return "Your new status is: " + fbuser_type + "."
             else:
-                return "You already are: " + fbuser_type + ", no changes were made."
+                return "You already are " + fbuser_type + ", no changes were made."
 
         # If the question type is authentication, check the user's authentication status to do corresponding works.
         elif(conversation.question == Question.get_question_type(QUESTION_AUTHENTICATE)):
