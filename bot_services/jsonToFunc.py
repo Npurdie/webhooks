@@ -181,6 +181,34 @@ def sonToFunc(inSon, message):
         # return curStatus()
     elif apiAction == "sayingHello":
         return "Hi! How may I help you?"
+    elif apiAction == "courseEvents":
+        ## return either a response of upcoming events in their major or ask them to input their major/courses
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if (UserService.get_major(fbuser)):
+            return "Querying for course events"
+        else:
+            ## ask for major
+            return "I don't know what you major in, could you tell me?"
+
+    elif apiAction == "addMajor":
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if "major" in parameters.keys():
+            if(parameters['major'] == ""):
+                return "I didn't get what you major in.. try again?"
+            else:
+                return (UserService.set_major(fbuser, parameters['major']))
+
+    elif apiAction == "addCourses":
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if "courses" in parameters.keys():
+            if not parameters['courses']:
+                return "I didn't get what courses you're taking.. try again?"
+            else:
+                return (UserService.add_courses(fbuser, parameters['courses']))
+
     else:
         return "Invalid input"
 

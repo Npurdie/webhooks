@@ -25,6 +25,7 @@ except ImportError:
     import apiai
 
 CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
+#CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
 #NLP STUFF
 
 
@@ -55,6 +56,18 @@ class AnswerService:
 
     def isMsgAll(answer):
         searchObj = re.search(r'\b[Mm]sg all\b',answer)
+        if searchObj:
+            return True
+        return False
+
+    def isAuthenticate(answer):
+        searchObj = re.search(r'\b[Aa]uthenticate\b',answer)
+        if searchObj:
+            return True
+        return False
+
+    def isLogout(answer):
+        searchObj = re.search(r'\b[Ll]ogout\b',answer)
         if searchObj:
             return True
         return False
@@ -121,6 +134,18 @@ class AnswerService:
                     CommunicationService.post_facebook_message_to_all(msg.split(":")[1])
                     return"Your message has been sent to all registered users"
                 return "Only admins can message all users"
+            elif(AnswerService.isAuthenticate(msg)):
+                if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
+                    return "You have already finished authentication."
+                else:
+                    conversation.set_conversation_question(Question.get_question_type(QUESTION_AUTHENTICATE))
+                return AuthenticationService.authenticationProcess(fbuser, msg)
+            # If user enters "logout", reset his/her authentication_status to "authentication_no"
+            elif(AnswerService.isLogout(msg)):
+                AuthenticationService.resetAuthentication(fbuser)
+                conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
+                return "Your are logged out."
+
             #API.AI STUFF
             ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
             request = ai.text_request()

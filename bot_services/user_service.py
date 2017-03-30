@@ -1,5 +1,5 @@
 from pprint import pprint
-from fb_mcbot.models import FBUser, Conversation, StudentSociety, Admin
+from fb_mcbot.models import FBUser, Conversation, StudentSociety, Admin, Major, Course
 
 class Question:
     question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2, 'EVENT_NAME':3,
@@ -72,3 +72,27 @@ class UserService:
             return True
         except Admin.DoesNotExist:
             return False
+
+    def get_major(fbuser):
+        print (fbuser)
+        major = fbuser.major;
+        if(major):
+            return True
+        else:
+            return False
+
+    def set_major(fbuser,major):
+        fbuser.major = Major.objects.get(name=major)
+        fbuser.save()
+        return ("You've set your major to " + fbuser.major.name)
+
+    def add_courses(fbuser,courses):
+        for course in courses:
+            c = Course.objects.get(pk=course)
+            fbuser.courses.add(c)
+        fbuser.save()
+        response = ""
+        newCourses = fbuser.courses.all()
+        for course in newCourses:
+            response += (course.name + " ,")
+        return ("Your courses are now: " + response)
