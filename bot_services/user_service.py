@@ -1,15 +1,13 @@
 from pprint import pprint
 from fb_mcbot.models import FBUser, Conversation, StudentSociety, Admin, Major, Course
 
-
 class Question:
-    question_type = {'NOTHING': 0, 'USER_TYPE': 1, 'AUTHENTICATE': 2, 'EVENT_NAME': 3,
-                     'EVENT_LOCATION': 4, 'EVENT_DESCRIPTION': 5, 'EVENT_LINK': 6, 'EVENT_DATE': 7,
-                     'EVENT_CONFIRMATION': 8, 'CHANGE_STATUS': 9}
+    question_type = {'NOTHING':0, 'USER_TYPE':1, 'AUTHENTICATE':2, 'EVENT_NAME':3,
+    'EVENT_LOCATION':4, 'EVENT_DESCRIPTION':5, 'EVENT_LINK':6, 'EVENT_DATE':7, 'EVENT_CONFIRMATION':8}
 
     def get_question_type(question):
         try:
-            result = Question.question_type.get(question)
+            result =  Question.question_type.get(question)
         except KeyError:
             pprint("Internal Error! " + question + " is not a question type!")
         return result
@@ -17,7 +15,7 @@ class Question:
 class UserService:
     def getUser(userid):
         try:
-            user = FBUser.objects.get(user_id=userid)
+            user = FBUser.objects.get(user_id = userid)
         except FBUser.DoesNotExist:
             pprint("User id not found in db, the user does not exist.")
             return None
@@ -31,12 +29,20 @@ class UserService:
             return None
         return users
 
-    def create_new_user(user_info, user_id):
+    def getStudentsInCourse(course):
+        users = []
+        for user in getAllUsers():
+            for c in user.courses:
+                if c == course:
+                    users.append(user)
+        return users
+
+    def create_new_user(user_info,user_id):
         pprint("Creating new user")
         firstname = user_info['first_name']
         lastname = user_info['last_name']
         timezone = user_info['timezone']
-        new_user = FBUser(first_name=firstname, last_name=lastname, user_id=user_id, timezone=timezone)
+        new_user = FBUser(first_name = firstname, last_name = lastname, user_id =  user_id, timezone = timezone)
         new_user.save()
         return new_user
 
@@ -44,14 +50,14 @@ class UserService:
         pprint("Creating new conversation")
         new_conversation = Conversation()
         new_conversation.fbuser = fbuser
-        # default question USER_TYPE
+        #default question USER_TYPE
         new_conversation.question = Question.get_question_type('USER_TYPE')
         new_conversation.save()
         return new_conversation
 
     def get_conversation(fbuser):
         try:
-            conversation = Conversation.objects.get(fbuser=fbuser)
+            conversation = Conversation.objects.get(fbuser = fbuser)
         except Conversation.DoesNotExist:
             pprint("Conversation with " + fbuser.user_id + " not found in db")
             return None
@@ -59,7 +65,7 @@ class UserService:
 
     def get_student_society(fbuser):
         try:
-            ssociety = StudentSociety.objects.get(fbuser=fbuser)
+            ssociety = StudentSociety.objects.get(fbuser = fbuser)
         except StudentSociety.DoesNotExist:
             pprint("Student StudentSociety with " + fbuser.user_id + " not found in db")
             return None
@@ -67,7 +73,7 @@ class UserService:
 
     def is_admin(fbuser):
         try:
-            Admin.objects.get(fbuser=fbuser)
+            Admin.objects.get(fbuser = fbuser)
             return True
         except Admin.DoesNotExist:
             return False

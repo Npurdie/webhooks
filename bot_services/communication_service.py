@@ -25,8 +25,12 @@ class CommunicationService:
         pprint(status.json())
 
     def post_facebook_message_to_all(received_message):
-            for user in UserService.getAllUsers():
-                CommunicationService.post_facebook_message(user.user_id,received_message)
+        for user in UserService.getAllUsers():
+            CommunicationService.post_facebook_message(user.user_id,received_message)
+
+    def post_facebook_message_to_course(course, received_message):
+        for user in UserService.getStudentsInCourse(course):
+            CommunicationService.post_facebook_message(user.user_id,received_message)
 
     def get_event_info(event_id):
         event = requests.get(("https://graph.facebook.com/v2.6/%s/?fields=category%%2Cname%%2Cend_time&access_token=%s" % (event_id, PAGE_ACCESS_TOKEN)))
