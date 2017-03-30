@@ -26,6 +26,7 @@ from bot_services.user_service import UserService, Question
 from bot_services.authentication_service import AuthenticationService
 from bot_services.event_service import EventService
 
+QUESTION_CHANGE_STATUS = 'CHANGE_STATUS'
 QUESTION_USER_TYPE = 'USER_TYPE'
 QUESTION_AUTHENTICATE = 'AUTHENTICATE'
 QUESTION_NOTHING = 'NOTHING'
@@ -109,12 +110,21 @@ def sonToFunc(inSon, message):
         # return ["curEvents"]
         # return curEvents()
 
-    elif apiAction == "change":
-        if "oldType" in inSon.keys() and "newType" in inSon.keys():
-            return ["changeStatus", inSon["oldType"], inSon["newType"]]
-            # return changeStatus(inSon["oldType"],inSon["newType"])
+    # If user enters "change" we start the "change my user type" conversation
+    elif apiAction == "changeStatus":
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if "status" in parameters.keys() and (parameters['status'] == 'instructor' or parameters['status'] == 'student'):
+            if (fbuser.user_type == parameters['status']):
+                return "You already are: " +  fbuser.user_type + ", no changes were made."
+            else :
+                fbuser.user_type = parameters['status']
+                fbuser.save()
+                return "Your new status is: " + fbuser.user_type + "."
         else:
-            return "Error: Incomplete Input"
+            conversation = UserService.get_conversation(fbuser)
+            conversation.set_conversation_question(Question.get_question_type(QUESTION_CHANGE_STATUS))
+        return "Please enter your new status."
 
     elif apiAction == "minerva":
         if "username" in inSon.keys() and "password" in inSon.keys():

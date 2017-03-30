@@ -9,6 +9,7 @@ MSG_ASK_FOR_USER_TYPE = 'Are you a [student] or [instructor]?'
 QUESTION_USER_TYPE = 'USER_TYPE'
 QUESTION_AUTHENTICATE = 'AUTHENTICATE'
 QUESTION_NOTHING = 'NOTHING'
+QUESTION_CHANGE_STATUS = 'CHANGE_STATUS'
 
 #NLP STUFF
 import os.path
@@ -101,6 +102,19 @@ class AnswerService:
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
                 return "Okay, you are a "+ fbuser_type + ". You can now authenticate anytime by typing [authenticate]."
 
+        # if the question is changing the user type. verify the user enter a different type
+        elif(conversation.question == Question.get_question_type(QUESTION_CHANGE_STATUS)):
+            current_type = fbuser.user_type
+            fbuser_type = AnswerService.getUsertype(msg)
+            if(fbuser_type is None):
+                return MSG_ASK_FOR_USER_TYPE
+            elif(fbuser_type != current_type):
+                fbuser.set_user_type(fbuser_type)
+                conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
+                return "Your new status is: " + fbuser_type + "."
+            else:
+                return "You already are " + fbuser_type + ", no changes were made."
+
         # If the question type is authentication, check the user's authentication status to do corresponding works.
         elif(conversation.question == Question.get_question_type(QUESTION_AUTHENTICATE)):
             reply = AuthenticationService.authenticationProcess(fbuser, msg)
@@ -158,5 +172,5 @@ class AnswerService:
             jsonDict = json.loads(str_apiJSON)
             return sonToFunc(jsonDict["result"], message)
 
-            return "You asked me something, but I don't know how to answer yet."
+            # return "You asked me something, but I don't know how to answer yet."
         return msg
