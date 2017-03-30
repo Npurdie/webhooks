@@ -13,4 +13,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print(Event.objects.filter(event_time__lt=datetime.now()).delete())
-        #print('Hello World')

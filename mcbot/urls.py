@@ -15,8 +15,20 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-
+from django.core.management.base import BaseCommand
+from bot_mcgill.models import McgillEvent
+import json
+import _datetime
+import pytz
+from bot_services.user_service import UserService, Question
+from datetime import datetime
+from fb_mcbot.models import Event
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^fb_mcbot/', include('fb_mcbot.urls')),
 ]
+
+def one_time_startup():
+	Event.objects.filter(event_time__lt=datetime.now()).delete()
+
+one_time_startup()
