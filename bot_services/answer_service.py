@@ -26,7 +26,8 @@ except ImportError:
     import apiai
 
 # CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
-CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
+# CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
+CLIENT_ACCESS_TOKEN = 'a0416a28f1bf43f0872f65ad1c159834' ##clara's API.ai agent
 #NLP STUFF
 
 
@@ -42,36 +43,6 @@ class AnswerService:
                 return 'instructor'
             else:
                 return None
-
-    def isCalendar(answer):
-        searchObj = re.search(r'\b[Cc]alendar\b',answer)
-        if searchObj:
-            return True
-        return False
-
-    def isPostEvent(answer):
-        searchObj = re.search(r'\b[Pp]ost event\b',answer)
-        if searchObj:
-            return True
-        return False
-
-    def isMsgAll(answer):
-        searchObj = re.search(r'\b[Mm]sg all\b',answer)
-        if searchObj:
-            return True
-        return False
-
-    def isAuthenticate(answer):
-        searchObj = re.search(r'\b[Aa]uthenticate\b',answer)
-        if searchObj:
-            return True
-        return False
-
-    def isLogout(answer):
-        searchObj = re.search(r'\b[Ll]ogout\b',answer)
-        if searchObj:
-            return True
-        return False
 
     # business logic
     def process_message(message):
@@ -124,41 +95,8 @@ class AnswerService:
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
             return reply
 
-        # If it's about event
-        elif(Question.about_event(conversation.question)):
-            reply = EventService.processEvent(conversation, msg)
-            return reply
-
         # If the question is empty, the msg must be a question.
         elif(conversation.question == Question.get_question_type(QUESTION_NOTHING)):
-            #TODO: NLP post event
-            if (AnswerService.isPostEvent((msg.split(":")[0]))):
-                ssociety = UserService.get_student_society(fbuser)
-                if (ssociety is None):
-                    return "Sorry you can't post event because you are not student society"
-                p = re.compile('(?:http).*')
-                m = p.search(msg)
-                reply = EventService.initEvent(conversation, m.group(0))
-                return reply
-            #if user enteres msg_all, will change when AI recognizes user wants to send mass message
-            elif(AnswerService.isMsgAll(msg.split(":")[0])):
-                if(UserService.is_admin(fbuser)):
-                    if (":" not in msg):
-                        return "please enter [msg all:your message]"
-                    CommunicationService.post_facebook_message_to_all(msg.split(":")[1])
-                    return"Your message has been sent to all registered users"
-                return "Only admins can message all users"
-            elif(AnswerService.isAuthenticate(msg)):
-                if (fbuser.authentication_status == AuthenticationService.AUTHENTICATION_DONE):
-                    return "You have already finished authentication."
-                else:
-                    conversation.set_conversation_question(Question.get_question_type(QUESTION_AUTHENTICATE))
-                return AuthenticationService.authenticationProcess(fbuser, msg)
-            # If user enters "logout", reset his/her authentication_status to "authentication_no"
-            elif(AnswerService.isLogout(msg)):
-                AuthenticationService.resetAuthentication(fbuser)
-                conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
-                return "Your are logged out."
             # API.AI STUFF
             ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
             request = ai.text_request()

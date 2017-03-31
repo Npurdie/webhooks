@@ -26,6 +26,7 @@ from bot_services.user_service import UserService, Question
 from bot_services.authentication_service import AuthenticationService
 from bot_services.event_service import EventService
 from bot_services.mcgill_event_service import McgillEventService
+from bot_services.communication_service import CommunicationService
 
 QUESTION_CHANGE_STATUS = 'CHANGE_STATUS'
 QUESTION_USER_TYPE = 'USER_TYPE'
@@ -66,20 +67,6 @@ def sonToFunc(inSon, message):
         # return "logout"
         # return logout()
 
-    elif apiAction == "walksafe":
-        if "location" in inSon.keys() and "number" in inSon.keys():
-            return ["walksafe", inSon["location"], inSon["number"]]
-            # return walksafe(inSon["location"],inSon["number"])
-        else:
-            return "Error: Incomplete Input"
-
-    elif apiAction == "drivesafe":
-        if "location" in inSon.keys() and "number" in inSon.keys():
-            return ["drivesafe", inSon["location"], inSon["number"]]
-            # return drivesafe(inSon["location"],inSon["number"])
-        else:
-            return "Error: Incomplete Input"
-
     elif apiAction == "rsvp":
         # if "event" in inSon.keys() and "status" in inSon.keys():
         #     return ["rsvp", inSon["event"], inSon["status"]]
@@ -99,17 +86,19 @@ def sonToFunc(inSon, message):
         else:
             return "Error: Incomplete Input"
 
-    elif apiAction == "events":
+    elif apiAction == "linkEvent":
+        if "event" not in parameters.keys():
+            return "What's the name of the event?"
+        if "url" not in parameters.keys():
+            return "What's the link of the event?"
         user_id = (message['sender']['id'])
         fbuser = UserService.getUser(user_id)
         conversation = UserService.get_conversation(fbuser)
         ssociety = UserService.get_student_society(fbuser)
         if (ssociety is None):
             return "Sorry you can't post event because you are not student society"
-        reply = EventService.initEvent(conversation)
+        reply = EventService.initEvent(conversation, parameters['url'])
         return reply
-        # return ["curEvents"]
-        # return curEvents()
 
     # If user enters "change" we start the "change my user type" conversation
     elif apiAction == "changeStatus":
@@ -158,6 +147,17 @@ def sonToFunc(inSon, message):
             # return broadcast(inSon["class"],inSon["message"])
         else:
             return "Error: Incomplete Input"
+
+    elif apiAction == "msgAll":
+        if "message" not in parameters.keys():
+            return "what's the message?"
+        user_id = (message['sender']['id'])
+        fbuser = UserService.getUser(user_id)
+        if(UserService.is_admin(fbuser)):
+            CommunicationService.post_facebook_message_to_all(parameters['message'])
+            return"Your message has been sent to all registered users"
+        else:
+            return "Only admins can message all users"
 
     elif apiAction == "share":
         if "event" in inSon.keys():

@@ -23,7 +23,7 @@ class EventService:
         p = re.compile('\d+(?!=\d)')
         m = p.search(link)
         if not m:
-            raise Exception('not valid link')
+            raise Exception(link + 'is not a valid link')
         return m.group(0)
 
     def create_new_event(conversation, link):
@@ -40,6 +40,7 @@ class EventService:
         new_event.link = link
         new_event.creator = ssociety
         new_event.name = event_info['name']
+        new_event.id = eventId
         new_event.event_time = parse(event_info['end_time']).strftime('%Y-%m-%d %H:%M:%S')
         new_event.category = event_info['category']
         new_event.save()
@@ -55,7 +56,7 @@ class EventService:
             EventService.create_new_event(conversation, link)
             return "Event created"
         except Exception as e:
-            return str(e)
+            return "Error occured while creating the event. Event might already exists"
 
     def get_events():
         now = datetime.now()

@@ -14,10 +14,6 @@ class Question:
             pprint("Internal Error! " + question + " is not a question type!")
         return result
 
-    def about_event(question):
-        return (question >= 3 and question <= 8)
-
-
 class UserService:
     def getUser(userid):
         try:

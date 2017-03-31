@@ -96,6 +96,7 @@ class Conversation(models.Model):
         self.save()
 
 class Event(models.Model):
+    id = models.SlugField(max_length=25, primary_key=True)
     name = models.CharField(max_length=70, null=True)
     category = models.CharField(max_length=100, null=True)
     link = models.CharField(max_length=300, null=True)
@@ -104,4 +105,4 @@ class Event(models.Model):
     event_time = models.DateTimeField(null=True)
 
     def __str__(self):
-        return ("%s %s %s %s %s" % (self.name, self.link, self.event_time, self.category, self.creator.fbuser.first_name))
+        return ("%s" % (self.name))
