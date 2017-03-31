@@ -1,4 +1,3 @@
-from bot_mcgill.models import McgillEvent
 import json
 import _datetime
 import pytz
@@ -18,16 +17,6 @@ QUESTION_EVENT_CONFIRMATION = 'EVENT_CONFIRMATION'
 QUESTION_NOTHING = 'NOTHING'
 
 class EventService:
-
-    def listAllDeadlines(self):
-        academicEvents = McgillEvent.objects.filter(event_type='event_academic')
-        eventsDict = {}
-        i = 1
-        deadlines = "Deadlines: "
-        for event in academicEvents:
-            dateString = _datetime.datetime.strftime(event.event_date, "%b %d %Y %H:%M:%S:%Z")
-            deadlines += event.event_name + ", " + dateString + ". "
-        return deadlines
 
     def get_event_id_from_link(link):
         print(link)

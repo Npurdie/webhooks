@@ -1,4 +1,3 @@
-from django import forms
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.core.validators import EmailValidator
@@ -63,7 +62,7 @@ class FBUser(models.Model):
     mcgill_email = models.EmailField(default='', max_length=254, validators=[EmailValidator(message="Please enter a valid McGill email address.", whitelist="mcgill.ca")])
     authentication_status = models.CharField(default='authentication_no', max_length=20)
     code = models.SlugField(default='', max_length=20)
-    timezone = models.IntegerField(default = -5)
+    timezone = models.IntegerField()
 
     major = models.ForeignKey(Major, on_delete=models.CASCADE, null=True);
     courses = models.ManyToManyField(Course) ##no special tricks, we allow FBUser to take courses outside of their major (for simplicity and this also happens to be the case)

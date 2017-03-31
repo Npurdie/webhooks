@@ -25,6 +25,7 @@ from bot_services.calendar_service import CalendarService
 from bot_services.user_service import UserService, Question
 from bot_services.authentication_service import AuthenticationService
 from bot_services.event_service import EventService
+from bot_services.mcgill_event_service import McgillEventService
 
 QUESTION_CHANGE_STATUS = 'CHANGE_STATUS'
 QUESTION_USER_TYPE = 'USER_TYPE'
@@ -141,7 +142,7 @@ def sonToFunc(inSon, message):
             return "Error: Incomplete Input"
 
     elif apiAction == "deadlines":
-        return EventService().listAllDeadlines()
+        return McgillEventService().listAllDeadlines()
 
     elif apiAction == "commands":
         return ["listCommands"]
@@ -189,13 +190,17 @@ def sonToFunc(inSon, message):
     elif apiAction == "my":
         return ["curStatus"]
         # return curStatus()
+
     elif apiAction == "sayingHello":
         return "Hi! How may I help you?"
-    elif apiAction == "courseEvents":
+
+    elif apiAction == "askEventsMajor":
         ## return either a response of upcoming events in their major or ask them to input their major/courses
         user_id = (message['sender']['id'])
         fbuser = UserService.getUser(user_id)
         if (UserService.get_major(fbuser)):
+            print (fbuser.major)
+            return McgillEventService().get_event_in_major(fbuser.major)
             return "Querying for course events"
         else:
             ## ask for major
@@ -218,7 +223,6 @@ def sonToFunc(inSon, message):
                 return "I didn't get what courses you're taking.. try again?"
             else:
                 return (UserService.add_courses(fbuser, parameters['courses']))
-
     else:
         return "Invalid input"
 

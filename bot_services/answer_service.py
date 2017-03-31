@@ -25,8 +25,8 @@ except ImportError:
     )
     import apiai
 
-CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
-#CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
+# CLIENT_ACCESS_TOKEN = '8839e93fbba447f0a8b93e6979aefce0'
+CLIENT_ACCESS_TOKEN = '549acac7e0384260ab147a73357ef602' ##thomas's API.ai agent
 #NLP STUFF
 
 
@@ -159,8 +159,7 @@ class AnswerService:
                 AuthenticationService.resetAuthentication(fbuser)
                 conversation.set_conversation_question(Question.get_question_type(QUESTION_NOTHING))
                 return "Your are logged out."
-
-            #API.AI STUFF
+            # API.AI STUFF
             ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
             request = ai.text_request()
             request.lang = 'de'  # optional, default value equal 'en'
@@ -170,7 +169,14 @@ class AnswerService:
             apiJSON = response.read()
             str_apiJSON = apiJSON.decode('utf-8')
             jsonDict = json.loads(str_apiJSON)
-            return sonToFunc(jsonDict["result"], message)
 
-            # return "You asked me something, but I don't know how to answer yet."
+            ##let users login regardless of their auth status
+            if "action" in jsonDict["result"]:
+                if jsonDict["result"]["action"] == "login":
+                    return sonToFunc(jsonDict["result"], message)
+            ##stops users that are not logged ie their auth is not done, from accessing the features in jsonFunc
+            if (fbuser.authentication_status != AuthenticationService.AUTHENTICATION_DONE):
+                return "You are not logged in. Please type login"
+            else:
+                return sonToFunc(jsonDict["result"], message)
         return msg

@@ -87,7 +87,7 @@ class UserService:
     def set_major(fbuser,major):
         fbuser.major = Major.objects.get(name=major)
         fbuser.save()
-        return ("You've set your major to " + fbuser.major.name)
+        return ("You've set your major to " + fbuser.major.name + ". What courses are you taking?")
 
     def add_courses(fbuser,courses):
         for course in courses:

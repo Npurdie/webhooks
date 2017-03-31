@@ -1,9 +1,4 @@
 from django.core.management.base import BaseCommand
-from bot_mcgill.models import McgillEvent
-import json
-import _datetime
-import pytz
-from bot_services.user_service import UserService, Question
 from datetime import datetime
 from fb_mcbot.models import Event
 

@@ -1,4 +1,5 @@
 from django.db import models
+from fb_mcbot.models import Major
 
 # Create your models here.
 
@@ -12,6 +13,7 @@ class McgillEvent(models.Model):
     event_date = models.DateTimeField()
     event_link = models.URLField(blank=True)
     event_type = models.CharField(max_length=70, choices=EVENT_TYPES, default='event_academic')
+    related_majors = models.ManyToManyField(Major);
     def __str__(self):
         return ("%s" % (self.event_name))
 
