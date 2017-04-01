@@ -31,13 +31,12 @@ class UserService:
             return None
         return users
 
-    def getStudentsInCourse(course):
-        users = []
-        for user in getAllUsers():
-            for c in user.courses:
-                if c == course:
-                    users.append(user)
-        return users
+    def getStudentsInCourse(courseName):
+        try:
+            course = Course.objects.get(name=courseName)
+        except Course.DoesNotExist:
+            raise
+        return course.fbuser_set.all()
 
     def create_new_user(user_info,user_id):
         pprint("Creating new user")
